@@ -22,9 +22,7 @@ first a matrix K with unit diagonal elements is created and then all rows and co
 \item "noise" White Gaussian noise. The matrix K is the T x T identity matrix. The default option.
 \item "squared" Squared exponential kernel, also known as radial basis function kernel or Gaussian kernel
 The (i, j)-element of K is defined as
-\ifelse{html}{\out{exp(-0.5 d(i, j)<sup>2</sup> / l<sup>2</sup> ,}}{\eqn{\exp\left(-0.5 d(i, j)^2 / l^2 \right) \,,}}
-where \ifelse{html}{\out{d(i, j)}}{d(i, j)} = |\verb{points[}i\verb{]} - \verb{points[}j\verb{]}| is the distance between i:th and j:th time points
-and \ifelse{html}{\out{l}}{l} = \code{params[1]} is the range parameter describing how many units away points significantly influence others.
+\item "o-u" The Ornstein-Uhlenbeck -kernel.
 }}
 
 \item{params}{The parameters

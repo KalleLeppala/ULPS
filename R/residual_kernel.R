@@ -9,10 +9,7 @@
 #' * "noise" White Gaussian noise. The matrix K is the T x T identity matrix. The default option.
 #' * "squared" Squared exponential kernel, also known as radial basis function kernel or Gaussian kernel
 #'             The (i, j)-element of K is defined as
-#'             \ifelse{html}{\out{exp(-0.5 d(i, j)<sup>2</sup> / l<sup>2</sup> ,}}{\eqn{\exp\left(-0.5 d(i, j)^2 / l^2 \right) \,,}}
-#'             where \ifelse{html}{\out{d(i, j)}}{d(i, j)} = |`points[`i`]` - `points[`j`]`| is the distance between i:th and j:th time points
-#'             and \ifelse{html}{\out{l}}{l} = `params[1]` is the range parameter describing how many units away points significantly influence others.
-#' * "o-u" The Ornstein–Uhlenbeck -kernel.
+#' * "o-u" The Ornstein-Uhlenbeck -kernel.
 #' @param params The parameters
 #' * parameter 1 stuff
 #' * parameter 2 stuff
@@ -57,3 +54,10 @@ residual_kernel <- function(variances, type = "noise", params = NA, points = NA,
 	}
 	return(covariance)
 }
+
+
+
+
+#             \ifelse{html}{\out{exp(-0.5 d(i, j)<sup>2</sup> / l<sup>2</sup> ),}}{\eqn{\exp\left(-0.5 d(i, j)^2 / l^2 \right) \,,}}
+#             where \ifelse{html}{\out{d(i, j)}}{d(i, j)} = |`points[`i`]` - `points[`j`]`| is the distance between i:th and j:th time points
+#             and \ifelse{html}{\out{l}}{l} = `params[1]` is the range parameter describing how many units away points significantly influence others.
