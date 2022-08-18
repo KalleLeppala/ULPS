@@ -17,7 +17,7 @@ You can simulate phenotypes from genotypes at sequential time points (or along o
 You can allow or prohibit causal loci and their effect sizes changing with time, which can reflect phenotypic plasticity and interaction with unobserved variables.
 The residual autocorrelation is modelled as a Gaussian process.
 
-You can install ULPS by using functions like install.github() or something, we need to check that. You also need to have [*corpcor*](https://CRAN.R-project.org/package=corpcor) [@schafer2005shrinkage; @opgen2007accurate], [*ggplot2*](https://CRAN.R-project.org/package=ggplot2) [@ggplot2] and [*fields*](https://CRAN.R-project.org/package=fields) [@fields] installed. The four packages are loaded and attached with:
+You can install ULPS with the command `install_github("https://github.com/KalleLeppala/ULPS")` from the R package [*devtools*](https://CRAN.R-project.org/package=devtools) [@devtools]. To use ULPS you will also need [*corpcor*](https://CRAN.R-project.org/package=corpcor) [@schafer2005shrinkage; @opgen2007accurate], [*ggplot2*](https://CRAN.R-project.org/package=ggplot2) [@ggplot2] and [*fields*](https://CRAN.R-project.org/package=fields) [@fields] installed. The four packages are loaded and attached with:
 
 ```{r loading_packages}
 library(ULPS)
@@ -75,10 +75,13 @@ ggplot(pca, aes(x = PC1, y = PC2, fill = population)) +
 
 ## The model
 
+$$1+1=2$$
+
 The underlying model of *ULPS* is
 $$
 Y_t = C_t + X\beta_t + \varepsilon_t,
 $$
+
 where $Y_t$ are the N phenotypes at time point $t$, $X$ is the centered and scaled N x P genotype matrix, $\beta_t$ is the vector of P genetic effects, $C_t$ are other observed effects at time point $t$, and $\varepsilon_t$ is the vector of residuals, each generated independently by a Gaussian process over time. The phenotypic variance causally explained by the term $X\beta_t$ is $\beta^{\top} R \beta$, where $R$ is the linkage disequilibrium matrix between the variants. Note that $C_t$ and $X$ need not be independent, in which dividing the causally explained variance by the total phenotypic variance doesn't equal additive heritability, which is typically defined as as the maximum amount of varianxce that can be linearly predicted from $X$.
 
 The phenptype is created by the function `ULPS()`. In the following we show how the components $\beta_t$, $C_t$ and $\varepsilon_t$ are specified for `ULPS()`.
