@@ -1,8 +1,10 @@
 ---
 title: "ULPS guide"
-output: html_document
 bibliography: references.bib
 link-citations: true
+author: Kalle Leppälä
+date: August 18, 2022
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
