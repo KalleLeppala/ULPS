@@ -13,8 +13,10 @@ which can reflect phenotypic plasticity and interaction with unobserved
 variables. The residual autocorrelation is modelled as a Gaussian
 process.
 
-You can install ULPS by using functions like install.github() or
-something, we need to check that. You also need to have
+You can install ULPS with the command
+`install_github("https://github.com/KalleLeppala/ULPS")` from the R
+package [*devtools*](https://CRAN.R-project.org/package=devtools)
+(Wickham et al. [2022](#ref-devtools)). To use ULPS you will also need
 [*corpcor*](https://CRAN.R-project.org/package=corpcor) (Schäfer and
 Strimmer [2005](#ref-schafer2005shrinkage); Opgen-Rhein and Strimmer
 [2007](#ref-opgen2007accurate)),
@@ -130,9 +132,13 @@ ggplot(pca, aes(x = PC1, y = PC2, fill = population)) +
 
 ## The model
 
+\[1+1=2\]
+
 The underlying model of *ULPS* is \[
 Y_t = C_t + X\beta_t + \varepsilon_t,
-\] where \(Y_t\) are the N phenotypes at time point \(t\), \(X\) is the
+\]
+
+where \(Y_t\) are the N phenotypes at time point \(t\), \(X\) is the
 centered and scaled N x P genotype matrix, \(\beta_t\) is the vector of
 P genetic effects, \(C_t\) are other observed effects at time point
 \(t\), and \(\varepsilon_t\) is the vector of residuals, each generated
@@ -504,6 +510,13 @@ Genomics.” *Statistical Applications in Genetics and Molecular Biology*
 
 Wickham, Hadley. 2016. *Ggplot2: Elegant Graphics for Data Analysis*.
 Springer-Verlag New York. <https://ggplot2.tidyverse.org>.
+
+</div>
+
+<div id="ref-devtools">
+
+Wickham, Hadley, Jim Hester, Winston Chang, and Jennifer Bryan. 2022.
+*Devtools: Tools to Make Developing R Packages Easier*.
 
 </div>
 
