@@ -131,6 +131,8 @@ The model
 
 1 + 1 = 2
 
+testing some shit: $\\sqrt{2} \> \\log(1)$.
+
 The underlying model of *ULPS* is
 *Y*<sub>*t*</sub> = *C*<sub>*t*</sub> + *X**β*<sub>*t*</sub> + *ε*<sub>*t*</sub>,
 
