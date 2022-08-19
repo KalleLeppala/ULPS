@@ -4,7 +4,9 @@ bibliography: references.bib
 link-citations: true
 author: Kalle Leppälä
 date: August 18, 2022
-output: github_document
+output:
+  md_document:
+    variant: markdown_github
 ---
 
 ```{r setup, include=FALSE}
@@ -74,12 +76,10 @@ ggplot(pca, aes(x = PC1, y = PC2, fill = population)) +
 ```
 
 ## The model
-
-$$1+1=2$$
-
 The underlying model of *ULPS* is
+
 $$
-Y_t = C_t + X\beta_t + \varepsilon_t,
+Y_t = C_t + X \beta_t + \varepsilon_t,
 $$
 
 where $Y_t$ are the N phenotypes at time point $t$, $X$ is the centered and scaled N x P genotype matrix, $\beta_t$ is the vector of P genetic effects, $C_t$ are other observed effects at time point $t$, and $\varepsilon_t$ is the vector of residuals, each generated independently by a Gaussian process over time. The phenotypic variance causally explained by the term $X\beta_t$ is $\beta^{\top} R \beta$, where $R$ is the linkage disequilibrium matrix between the variants. Note that $C_t$ and $X$ need not be independent, in which dividing the causally explained variance by the total phenotypic variance doesn't equal additive heritability, which is typically defined as as the maximum amount of varianxce that can be linearly predicted from $X$.
@@ -93,7 +93,7 @@ The correlation between markers can either be estimated from the N x P genotype 
 
 A simple scenario of a polygenic signal over five time points can be simulated as follows:
 
-```{r polygenic}
+```{r polygenic, eval=FALSE}
 amounts <- rbind(rep(1000, 5)) # A thousand random causal variants at each time point.
 variances <- rbind(rep(1, 5)) # At each time point, the variance explained by the polygenic signal is 1.
 changes <- rbind(rep(1000, 4)) # Between time points, all causal variants are re-randomized.
@@ -111,7 +111,7 @@ The function `check_explained_variance()` calculates the variance causally expla
 
 Next we add an olicogenic signal parallel to the polygenic one. The arguments above were matrices with only one row, because we only had one *effectiveness class*. The olicogenic signal uses the second row; you can add as many effectiveness classes as you need. We'll make the causal variants of the olicogenic signal slowly change and disappear over time.
 
-```{r olicogenic}
+```{r olicogenic, eval=FALSE}
 amounts <- rbind(rep(1000, 5), c(8, 6, 4, 2, 0)) # The amount of variants in the olicogenic signal diminishes over time.
 variances <- rbind(rep(1, 5), c(4, 3, 2, 1, 0)) # The variance explained by the olicogenic signal diminishes as well.
 changes <- rbind(rep(1000, 4), c(1, 1, 1, 0)) # Between time points, one causal variant is replaced with a new one, except between time points 4 and 5 when there's nothing left to change.
@@ -132,7 +132,7 @@ The function `plot_effects()` visualizes the causal effect sizes over time. The 
 
 When there are several effectiveness classes, the variance causally explained by all classes together need not be the sum of variances causally explained by the classes individually because of linkage between genetic variants. We can check the variance explained by the classes together by calling `check_explained_variance()` without specifying the class.
 
-```{r class_conflict}
+```{r class_conflict, eval=FALSE}
 check_explained_variance(table, olico, 1, 1) # Variance explained by the polygenic signal is 1.00 at time point 1.
 check_explained_variance(table, olico, 1, 2) # Variance explained by the olicogenic signal is 4.00 at time point 1.
 check_explained_variance(table, olico, 1) # Variance explained by the signals together at time point 1 is not exactly 5.00.
@@ -140,7 +140,7 @@ check_explained_variance(table, olico, 1) # Variance explained by the signals to
 
 We can choose to prioritize the variance explained by classes together using the optional parameter `prioritize_total_variance`:
 
-```{r prioritizing_total}
+```{r prioritizing_total, eval=FALSE}
 olico_tot <- create_effects(table, amounts, variances, changes, shuffles, prioritize_total_variance = TRUE)
 check_explained_variance(table, olico_tot, 1, 1) # Now these two are a little bit off.
 check_explained_variance(table, olico_tot, 1, 2)
@@ -149,7 +149,7 @@ check_explained_variance(table, olico_tot, 1) # It's the cost of this one being 
 
 It's conceivable that the olicogenic signal comprises of rarer variants than the polygenic one. If you want to restrict effectiveness classes to some subsets of variants, you can use the optional parameter `subset`:
 
-```{r subsets}
+```{r subsets, eval=FALSE}
 common <- which(apply(table, 2, min) >= - 1.25) # 7309 columns including commoner variants, using an arbitrary threshold (that misclassifies variants of which we have no rare allele homozygotes).
 rare <- which(apply(table, 2, min) < - 1.25) # 1105 columns including rarer variants.
 subsets <- list(common, rare)
@@ -163,7 +163,7 @@ table(olico_sep$loci[[2]][[1]] %in% rare) # The class 2 (olicogenic signal) at t
 The effect of other observed variables influencing $Y_t$ can optionally be given to `ULPS()` as an N x T matrix `C`, the columns of which are $C_t$. When $C_t$ and $X$ are not independent, the non-genetic component is a confounder between $X$ and $Y_t$, and the proportion of variance causally explained is less than the additive heritability.
 As an example, we model a population stratification confounder effect increasing over time using the two principal components.
 
-```{r confounder}
+```{r confounder, eval=FALSE}
 confounder <- pca[, 1] %*% rbind(seq(200, 600, 100)) + pca[, 2] %*% rbind(seq(100, 700, 150))
 ```
 
@@ -171,7 +171,7 @@ confounder <- pca[, 1] %*% rbind(seq(200, 600, 100)) + pca[, 2] %*% rbind(seq(10
 
 We model residual autocorrelation between time points as a Gaussian process, residuals between individuals are independent. The function `ULPS()` requires a T x T residual covariance matrix between the time points with the residual variance components in the diagonal. This matrix can be created with the function `residual_kernel()`. It has several options for `type`, the kernel function used to generate the matrix: "noise" is white noise (identity matrix), "squared" is the squared exponential model, "o-u" is the Ornstein–Uhlenbeck -model, and "matern" is the Matérn model.
 
-```{r residual}
+```{r residual, eval=FALSE}
 library(ULPS) # Come on the function is there I know it is.
 residual <- residual_kernel(rep(3, 5), "o-u", 10, sample = FALSE)
 ```
@@ -180,12 +180,12 @@ residual <- residual_kernel(rep(3, 5), "o-u", 10, sample = FALSE)
 
 The phenotype can now be simulated using the function `ULPS()`. 
 
-```{r phenotype}
+```{r phenotype, eval=FALSE}
 pheno <- ULPS(table, poly, residual) # Without confounders.
 confounded_pheno <- ULPS(table, poly, residual, confounder) # Stratification by population structure.
 ```
 
-Don't knwo what to wwrite here yet. Maybe plot some phenotypes somehow. Here's a TODO list:
+Don't know what to write here yet. Maybe plot some phenotypes somehow. Here's a TODO list:
 1. Update all packages and R itself.
 2. Make `residual_kernel()` option `sample = S` work, and using `ggplot()` instead of base plot.
 3. Document all functions, use @seealso

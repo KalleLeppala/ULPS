@@ -129,11 +129,8 @@ ggplot(pca, aes(x = PC1, y = PC2, fill = population)) +
 The model
 ---------
 
-1 + 1 = 2
-
-testing some shit: $\\sqrt{2} \> \\log(1)$.
-
 The underlying model of *ULPS* is
+
 *Y*<sub>*t*</sub> = *C*<sub>*t*</sub> + *X**β*<sub>*t*</sub> + *ε*<sub>*t*</sub>,
 
 where *Y*<sub>*t*</sub> are the N phenotypes at time point *t*, *X* is
