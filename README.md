@@ -1,5 +1,5 @@
 This is a tutorial of the R package *ULPS* (Uniform Longitudinal
-Phenotype Simulator) (Leppälä [2022](#ref-ULPS)). You can simulate
+Phenotype Simulator) ([Leppälä 2022](#ref-ULPS)). You can simulate
 phenotypes from genotypes at sequential time points (or along other axis
 such as latitude), while controlling for the levels of variance
 additively explained by the genotypes and residual variance. You can
@@ -11,67 +11,28 @@ process.
 You can install ULPS with the command
 `install_github("https://github.com/KalleLeppala/ULPS")` from the R
 package [*devtools*](https://CRAN.R-project.org/package=devtools)
-(Wickham et al. [2022](#ref-devtools)). To use ULPS you will also need
-[*corpcor*](https://CRAN.R-project.org/package=corpcor) (Schäfer and
-Strimmer [2005](#ref-schafer2005shrinkage); Opgen-Rhein and Strimmer
-[2007](#ref-opgen2007accurate)),
-[*ggplot2*](https://CRAN.R-project.org/package=ggplot2) (Wickham
-[2016](#ref-ggplot2)) and
-[*fields*](https://CRAN.R-project.org/package=fields) (Douglas Nychka et
-al. [2021](#ref-fields)) installed. The four packages are loaded and
+([Wickham et al. 2022](#ref-devtools)). To use ULPS you will also need
+[*corpcor*](https://CRAN.R-project.org/package=corpcor) ([Schäfer and
+Strimmer 2005](#ref-schafer2005shrinkage); [Opgen-Rhein and Strimmer
+2007](#ref-opgen2007accurate)),
+[*ggplot2*](https://CRAN.R-project.org/package=ggplot2) ([Wickham
+2016](#ref-ggplot2)) and
+[*fields*](https://CRAN.R-project.org/package=fields) ([Douglas Nychka
+et al. 2021](#ref-fields)) installed. The four packages are loaded and
 attached with:
 
 ``` r
 library(ULPS)
 library(corpcor)
-```
-
-    ## Warning: package 'corpcor' was built under R version 4.0.5
-
-``` r
 library(ggplot2)
-```
-
-    ## Warning: package 'ggplot2' was built under R version 4.0.5
-
-``` r
 library(fields)
 ```
 
-    ## Warning: package 'fields' was built under R version 4.0.4
-
-    ## Loading required package: spam
-
-    ## Warning: package 'spam' was built under R version 4.0.4
-
-    ## Loading required package: dotCall64
-
-    ## Warning: package 'dotCall64' was built under R version 4.0.4
-
-    ## Loading required package: grid
-
-    ## Spam version 2.6-0 (2020-12-14) is loaded.
-    ## Type 'help( Spam)' or 'demo( spam)' for a short introduction 
-    ## and overview of this package.
-    ## Help for individual functions is also obtained by adding the
-    ## suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
-
-    ## 
-    ## Attaching package: 'spam'
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     backsolve, forwardsolve
-
-    ## See https://github.com/NCAR/Fields for
-    ##  an extensive vignette, other supplements and source code
-
-Example data
-------------
+## Example data
 
 As an example in this tutorial we use the
 [*AdaptMap*](https://datadryad.org/stash/dataset/doi:10.5061/dryad.v8g21pt)
-data set (Bertolini et al. [2018](#ref-bertolini2018signatures)). The
+data set ([Bertolini et al. 2018](#ref-bertolini2018signatures)). The
 data consist of 4653 domestic goats (Capra hircus) representing 144
 breeds from around the world, genotyped at 53347 loci.
 
@@ -126,8 +87,7 @@ ggplot(pca, aes(x = PC1, y = PC2, fill = population)) +
 
 ![](README_files/figure-markdown_github/pca-1.png)
 
-The model
----------
+## The model
 
 The underlying model of *ULPS* is
 
@@ -150,8 +110,7 @@ The phenptype is created by the function `ULPS()`. In the following we
 show how the components *β*<sub>*t*</sub>, *C*<sub>*t*</sub> and
 *ε*<sub>*t*</sub> are specified for `ULPS()`.
 
-The genetic component
----------------------
+## The genetic component
 
 The causal effects of genotypes to phenotypes are simulated using the
 function `create_effects()`, which generates the time-dependent effect
@@ -258,8 +217,7 @@ table(olico_sep$loci[[1]][[1]] %in% common) # The class 1 (polygenic signal) at 
 table(olico_sep$loci[[2]][[1]] %in% rare) # The class 2 (olicogenic signal) at time point 1 is now entirely sampled from the subset rare.
 ```
 
-The optional non-genetic component
-----------------------------------
+## The optional non-genetic component
 
 The effect of other observed variables influencing *Y*<sub>*t*</sub> can
 optionally be given to `ULPS()` as an N x T matrix `C`, the columns of
@@ -274,8 +232,7 @@ the two principal components.
 confounder <- pca[, 1] %*% rbind(seq(200, 600, 100)) + pca[, 2] %*% rbind(seq(100, 700, 150))
 ```
 
-The residual component
-----------------------
+## The residual component
 
 We model residual autocorrelation between time points as a Gaussian
 process, residuals between individuals are independent. The function
@@ -292,8 +249,7 @@ library(ULPS) # Come on the function is there I know it is.
 residual <- residual_kernel(rep(3, 5), "o-u", 10, sample = FALSE)
 ```
 
-The phenotypes
---------------
+## The phenotypes
 
 The phenotype can now be simulated using the function `ULPS()`.
 
@@ -305,8 +261,8 @@ confounded_pheno <- ULPS(table, poly, residual, confounder) # Stratification by 
 Don’t know what to write here yet. Maybe plot some phenotypes somehow.
 Here’s a TODO list: 1. Update all packages and R itself. 2. Make
 `residual_kernel()` option `sample = S` work, and using `ggplot()`
-instead of base plot. 3. Document all functions, use (<span
-class="citeproc-not-found" data-reference-id="seealso">**???**</span>)
+instead of base plot. 3. Document all functions, use
+([**seealso?**](#ref-seealso))
 
 ``` r
 library(devtools)
@@ -326,7 +282,7 @@ Corporation for Atmospheric Research.
 
 Leppälä, Karhunen, Arjas. 2022. “Uniform Longitudinal Phenotype
 Simulator.” *I Hope It’ll Be Published Somewhere, Aiming at
-Bioinformatcs* ? (?): ?–?
+Bioinformatcs* ? (?): ?–.
 
 Opgen-Rhein, Rainer, and Korbinian Strimmer. 2007. “Accurate Ranking of
 Differentially Expressed Genes by a Distribution-Free Shrinkage
@@ -342,4 +298,4 @@ Wickham, Hadley. 2016. *Ggplot2: Elegant Graphics for Data Analysis*.
 Springer-Verlag New York. <https://ggplot2.tidyverse.org>.
 
 Wickham, Hadley, Jim Hester, Winston Chang, and Jennifer Bryan. 2022.
-*Devtools: Tools to Make Developing R Packages Easier*.
+*Devtools: Tools to Make Developing r Packages Easier*.
