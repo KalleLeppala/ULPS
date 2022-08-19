@@ -1,3 +1,8 @@
+ULPS guide
+================
+Kalle Leppälä
+August 19, 2022
+
 This is a tutorial of the R package *ULPS* (Uniform Longitudinal
 Phenotype Simulator) ([Leppälä 2022](#ref-ULPS)). You can simulate
 phenotypes from genotypes at sequential time points (or along other axis
@@ -85,7 +90,7 @@ ggplot(pca, aes(x = PC1, y = PC2, fill = population)) +
   geom_point(pch = 21, show.legend = FALSE)
 ```
 
-![](README_files/figure-markdown_github/pca-1.png)
+![](README_files/figure-gfm/pca-1.png)<!-- -->
 
 ## The model
 
@@ -129,43 +134,12 @@ variances <- rbind(rep(1, 5)) # At each time point, the variance explained by th
 changes <- rbind(rep(1000, 4)) # Between time points, all causal variants are re-randomized.
 shuffles <- rbind(rep(TRUE, 4)) # This does nothing for now since no variants are kept between time points.
 poly <- create_effects(table, amounts, variances, changes, shuffles) # Calling the function.
-```
-
-    ## [1] "Class 1, time point 1 done."
-    ## [1] "Class 1, time point 2 done."
-    ## [1] "Class 1, time point 3 done."
-    ## [1] "Class 1, time point 4 done."
-    ## [1] "Class 1, time point 5 done."
-
-``` r
 check_explained_variance(table, poly, 1, 1) # Sanity checks.
-```
-
-    ## [1] "Time point 1, class 1: variance = 1, sum of squared effects = 1.75723817453297"
-
-``` r
 check_explained_variance(table, poly, 2, 1)
-```
-
-    ## [1] "Time point 2, class 1: variance = 1, sum of squared effects = 1.95362099342017"
-
-``` r
 check_explained_variance(table, poly, 3, 1)
-```
-
-    ## [1] "Time point 3, class 1: variance = 1, sum of squared effects = 1.85978620522639"
-
-``` r
 check_explained_variance(table, poly, 4, 1)
-```
-
-    ## [1] "Time point 4, class 1: variance = 1, sum of squared effects = 1.83415719616529"
-
-``` r
 check_explained_variance(table, poly, 5, 1)
 ```
-
-    ## [1] "Time point 5, class 1: variance = 0.999999999999997, sum of squared effects = 1.75067168722771"
 
 Now `poly$loci` contains the causal variant location vectors and
 `poly$size` contains the causal variant effect size vectors. These are
@@ -303,32 +277,64 @@ document()
 
 ## References
 
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-bertolini2018signatures" class="csl-entry">
+
 Bertolini, Francesca, Bertrand Servin, Andrea Talenti, Estelle Rochat,
 Eui Soo Kim, Claire Oget, Isabelle Palhière, et al. 2018. “Signatures of
 Selection and Environmental Adaptation Across the Goat Genome
 Post-Domestication.” *Genetics Selection Evolution* 50 (1): 1–24.
+
+</div>
+
+<div id="ref-fields" class="csl-entry">
 
 Douglas Nychka, Reinhard Furrer, John Paige, and Stephan Sain. 2021.
 “Fields: Tools for Spatial Data.” Boulder, CO, USA: University
 Corporation for Atmospheric Research.
 <https://github.com/dnychka/fieldsRPackage>.
 
+</div>
+
+<div id="ref-ULPS" class="csl-entry">
+
 Leppälä, Karhunen, Arjas. 2022. “Uniform Longitudinal Phenotype
 Simulator.” *I Hope It’ll Be Published Somewhere, Aiming at
 Bioinformatcs* ? (?): ?–.
+
+</div>
+
+<div id="ref-opgen2007accurate" class="csl-entry">
 
 Opgen-Rhein, Rainer, and Korbinian Strimmer. 2007. “Accurate Ranking of
 Differentially Expressed Genes by a Distribution-Free Shrinkage
 Approach.” *Statistical Applications in Genetics and Molecular Biology*
 6 (1).
 
+</div>
+
+<div id="ref-schafer2005shrinkage" class="csl-entry">
+
 Schäfer, Juliane, and Korbinian Strimmer. 2005. “A Shrinkage Approach to
 Large-Scale Covariance Matrix Estimation and Implications for Functional
 Genomics.” *Statistical Applications in Genetics and Molecular Biology*
 4 (1).
 
+</div>
+
+<div id="ref-ggplot2" class="csl-entry">
+
 Wickham, Hadley. 2016. *Ggplot2: Elegant Graphics for Data Analysis*.
 Springer-Verlag New York. <https://ggplot2.tidyverse.org>.
 
+</div>
+
+<div id="ref-devtools" class="csl-entry">
+
 Wickham, Hadley, Jim Hester, Winston Chang, and Jennifer Bryan. 2022.
 *Devtools: Tools to Make Developing r Packages Easier*.
+
+</div>
+
+</div>
