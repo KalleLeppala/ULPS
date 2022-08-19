@@ -1,8 +1,3 @@
-ULPS guide
-================
-Kalle Leppälä
-August 18, 2022
-
 This is a tutorial of the R package *ULPS* (Uniform Longitudinal
 Phenotype Simulator) (Leppälä [2022](#ref-ULPS)). You can simulate
 phenotypes from genotypes at sequential time points (or along other axis
@@ -71,7 +66,8 @@ library(fields)
     ## See https://github.com/NCAR/Fields for
     ##  an extensive vignette, other supplements and source code
 
-## Example data
+Example data
+------------
 
 As an example in this tutorial we use the
 [*AdaptMap*](https://datadryad.org/stash/dataset/doi:10.5061/dryad.v8g21pt)
@@ -128,41 +124,43 @@ ggplot(pca, aes(x = PC1, y = PC2, fill = population)) +
   geom_point(pch = 21, show.legend = FALSE)
 ```
 
-![](README_files/figure-gfm/pca-1.png)<!-- -->
+![](README_files/figure-markdown_github/pca-1.png)
 
-## The model
+The model
+---------
 
-\[1+1=2\]
+1 + 1 = 2
 
-The underlying model of *ULPS* is \[
-Y_t = C_t + X\beta_t + \varepsilon_t,
-\]
+The underlying model of *ULPS* is
+*Y*<sub>*t*</sub> = *C*<sub>*t*</sub> + *X**β*<sub>*t*</sub> + *ε*<sub>*t*</sub>,
 
-where \(Y_t\) are the N phenotypes at time point \(t\), \(X\) is the
-centered and scaled N x P genotype matrix, \(\beta_t\) is the vector of
-P genetic effects, \(C_t\) are other observed effects at time point
-\(t\), and \(\varepsilon_t\) is the vector of residuals, each generated
-independently by a Gaussian process over time. The phenotypic variance
-causally explained by the term \(X\beta_t\) is \(\beta^{\top} R \beta\),
-where \(R\) is the linkage disequilibrium matrix between the variants.
-Note that \(C_t\) and \(X\) need not be independent, in which dividing
-the causally explained variance by the total phenotypic variance doesn’t
-equal additive heritability, which is typically defined as as the
-maximum amount of varianxce that can be linearly predicted from \(X\).
+where *Y*<sub>*t*</sub> are the N phenotypes at time point *t*, *X* is
+the centered and scaled N x P genotype matrix, *β*<sub>*t*</sub> is the
+vector of P genetic effects, *C*<sub>*t*</sub> are other observed
+effects at time point *t*, and *ε*<sub>*t*</sub> is the vector of
+residuals, each generated independently by a Gaussian process over time.
+The phenotypic variance causally explained by the term
+*X**β*<sub>*t*</sub> is *β*<sup>⊤</sup>*R**β*, where *R* is the linkage
+disequilibrium matrix between the variants. Note that *C*<sub>*t*</sub>
+and *X* need not be independent, in which dividing the causally
+explained variance by the total phenotypic variance doesn’t equal
+additive heritability, which is typically defined as as the maximum
+amount of varianxce that can be linearly predicted from *X*.
 
 The phenptype is created by the function `ULPS()`. In the following we
-show how the components \(\beta_t\), \(C_t\) and \(\varepsilon_t\) are
-specified for `ULPS()`.
+show how the components *β*<sub>*t*</sub>, *C*<sub>*t*</sub> and
+*ε*<sub>*t*</sub> are specified for `ULPS()`.
 
-## The genetic component
+The genetic component
+---------------------
 
 The causal effects of genotypes to phenotypes are simulated using the
 function `create_effects()`, which generates the time-dependent effect
-size vectors \(\beta_t\). In order to get the causally explained
+size vectors *β*<sub>*t*</sub>. In order to get the causally explained
 variance just right, it needs information on linkage disequilibrium. The
 correlation between markers can either be estimated from the N x P
-genotype matrix \(X\), like we do in this tutorial, but the function
-also accepts an external P x P correlation matrix if it’s not too big.
+genotype matrix *X*, like we do in this tutorial, but the function also
+accepts an external P x P correlation matrix if it’s not too big.
 
 A simple scenario of a polygenic signal over five time points can be
 simulated as follows:
@@ -173,48 +171,17 @@ variances <- rbind(rep(1, 5)) # At each time point, the variance explained by th
 changes <- rbind(rep(1000, 4)) # Between time points, all causal variants are re-randomized.
 shuffles <- rbind(rep(TRUE, 4)) # This does nothing for now since no variants are kept between time points.
 poly <- create_effects(table, amounts, variances, changes, shuffles) # Calling the function.
-```
-
-    ## [1] "Class 1, time point 1 done."
-    ## [1] "Class 1, time point 2 done."
-    ## [1] "Class 1, time point 3 done."
-    ## [1] "Class 1, time point 4 done."
-    ## [1] "Class 1, time point 5 done."
-
-``` r
 check_explained_variance(table, poly, 1, 1) # Sanity checks.
-```
-
-    ## [1] "Time point 1, class 1: variance = 1, sum of squared effects = 1.75723817453297"
-
-``` r
 check_explained_variance(table, poly, 2, 1)
-```
-
-    ## [1] "Time point 2, class 1: variance = 1, sum of squared effects = 1.95362099342017"
-
-``` r
 check_explained_variance(table, poly, 3, 1)
-```
-
-    ## [1] "Time point 3, class 1: variance = 1, sum of squared effects = 1.85978620522639"
-
-``` r
 check_explained_variance(table, poly, 4, 1)
-```
-
-    ## [1] "Time point 4, class 1: variance = 1, sum of squared effects = 1.83415719616529"
-
-``` r
 check_explained_variance(table, poly, 5, 1)
 ```
-
-    ## [1] "Time point 5, class 1: variance = 0.999999999999997, sum of squared effects = 1.75067168722771"
 
 Now `poly$loci` contains the causal variant location vectors and
 `poly$size` contains the causal variant effect size vectors. These are
 combined in the PxT matrix `poly$beta`, the columns of which are
-\(\beta_t\).
+*β*<sub>*t*</sub>.
 
 The function `check_explained_variance()` calculates the variance
 causally explained by this polygenic signal of 1000 variants at the five
@@ -236,58 +203,13 @@ variances <- rbind(rep(1, 5), c(4, 3, 2, 1, 0)) # The variance explained by the 
 changes <- rbind(rep(1000, 4), c(1, 1, 1, 0)) # Between time points, one causal variant is replaced with a new one, except between time points 4 and 5 when there's nothing left to change.
 shuffles <- rbind(rep(TRUE, 4), rep(FALSE, 4)) # The causal variants of the olicogenic signal that are kept between time points keep their effect size as well.
 olico <- create_effects(table, amounts, variances, changes, shuffles)
-```
-
-    ## [1] "Class 1, time point 1 done."
-    ## [1] "Class 2, time point 1 done."
-    ## [1] "Class 1, time point 2 done."
-    ## [1] "Class 2, time point 2 done."
-    ## [1] "Class 1, time point 3 done."
-
-    ## Warning in create_effects(table, amounts, variances, changes, shuffles): Because of the effects that are kept, class 2 at time 3 explains more variance than is allocated for it.
-    ##   Consider re-running the simulation.
-
-    ## [1] "Class 2, time point 3 done."
-    ## [1] "Class 1, time point 4 done."
-    ## [1] "Class 2, time point 4 done."
-    ## [1] "Class 1, time point 5 done."
-    ## [1] "Class 2, time point 5 done."
-
-``` r
 check_explained_variance(table, olico, 1, 2) # Sanity checks on the olicogenic signal.
-```
-
-    ## [1] "Time point 1, class 2: variance = 4, sum of squared effects = 3.63882531496903"
-
-``` r
 check_explained_variance(table, olico, 2, 2)
-```
-
-    ## [1] "Time point 2, class 2: variance = 3, sum of squared effects = 3.0719539626099"
-
-``` r
 check_explained_variance(table, olico, 3, 2)
-```
-
-    ## [1] "Time point 3, class 2: variance = 2.61308745063856, sum of squared effects = 2.72779072339269"
-
-``` r
 check_explained_variance(table, olico, 4, 2)
-```
-
-    ## [1] "Time point 4, class 2: variance = 1, sum of squared effects = 0.995628927329089"
-
-``` r
 check_explained_variance(table, olico, 5, 2)
-```
-
-    ## [1] "Time point 5, class 2: variance = 0, sum of squared effects = 0 (empty set)"
-
-``` r
 plot_effects(olico) # Visualization of the effect sizes.
 ```
-
-![](README_files/figure-gfm/olicogenic-1.png)<!-- -->
 
 The warning is because the function proceeds step-wise over time points
 and we instructed it to retain previous causal effects from time point 2
@@ -310,61 +232,19 @@ specifying the class.
 
 ``` r
 check_explained_variance(table, olico, 1, 1) # Variance explained by the polygenic signal is 1.00 at time point 1.
-```
-
-    ## [1] "Time point 1, class 1: variance = 1, sum of squared effects = 1.91953535482851"
-
-``` r
 check_explained_variance(table, olico, 1, 2) # Variance explained by the olicogenic signal is 4.00 at time point 1.
-```
-
-    ## [1] "Time point 1, class 2: variance = 4, sum of squared effects = 3.63882531496903"
-
-``` r
 check_explained_variance(table, olico, 1) # Variance explained by the signals together at time point 1 is not exactly 5.00.
 ```
-
-    ## [1] "Time point 1, all classes together: variance = 4.90907827139716, sum of squared effects = 5.55836066979754"
 
 We can choose to prioritize the variance explained by classes together
 using the optional parameter `prioritize_total_variance`:
 
 ``` r
 olico_tot <- create_effects(table, amounts, variances, changes, shuffles, prioritize_total_variance = TRUE)
-```
-
-    ## [1] "Class 1, time point 1 done."
-    ## [1] "Class 2, time point 1 done."
-    ## [1] "Class 1, time point 2 done."
-    ## [1] "Class 2, time point 2 done."
-    ## [1] "Class 1, time point 3 done."
-
-    ## Warning in create_effects(table, amounts, variances, changes, shuffles, : Because of the effects that are kept, class 2 at time 3 explains more variance than is allocated for it.
-    ##   Consider re-running the simulation.
-
-    ## [1] "Class 2, time point 3 done."
-    ## [1] "Class 1, time point 4 done."
-    ## [1] "Class 2, time point 4 done."
-    ## [1] "Class 1, time point 5 done."
-    ## [1] "Class 2, time point 5 done."
-
-``` r
 check_explained_variance(table, olico_tot, 1, 1) # Now these two are a little bit off.
-```
-
-    ## [1] "Time point 1, class 1: variance = 0.992328604627623, sum of squared effects = 1.84536416259209"
-
-``` r
 check_explained_variance(table, olico_tot, 1, 2)
-```
-
-    ## [1] "Time point 1, class 2: variance = 3.9693144185105, sum of squared effects = 3.65893530671892"
-
-``` r
 check_explained_variance(table, olico_tot, 1) # It's the cost of this one being exact.
 ```
-
-    ## [1] "Time point 1, all classes together: variance = 5, sum of squared effects = 5.504299469311"
 
 It’s conceivable that the olicogenic signal comprises of rarer variants
 than the polygenic one. If you want to restrict effectiveness classes to
@@ -375,54 +255,28 @@ common <- which(apply(table, 2, min) >= - 1.25) # 7309 columns including commone
 rare <- which(apply(table, 2, min) < - 1.25) # 1105 columns including rarer variants.
 subsets <- list(common, rare)
 olico_sep <- create_effects(table, amounts, variances, changes, shuffles, subsets = subsets)
-```
-
-    ## Warning in if (is.na(subsets) == TRUE) {: the condition has length > 1 and only
-    ## the first element will be used
-
-    ## [1] "Class 1, time point 1 done."
-    ## [1] "Class 2, time point 1 done."
-    ## [1] "Class 1, time point 2 done."
-    ## [1] "Class 2, time point 2 done."
-    ## [1] "Class 1, time point 3 done."
-    ## [1] "Class 2, time point 3 done."
-    ## [1] "Class 1, time point 4 done."
-    ## [1] "Class 2, time point 4 done."
-    ## [1] "Class 1, time point 5 done."
-    ## [1] "Class 2, time point 5 done."
-
-``` r
 table(olico_sep$loci[[1]][[1]] %in% common) # The class 1 (polygenic signal) at time point 1 is now entirely sampled from the subset common.
-```
-
-    ## 
-    ## TRUE 
-    ## 1000
-
-``` r
 table(olico_sep$loci[[2]][[1]] %in% rare) # The class 2 (olicogenic signal) at time point 1 is now entirely sampled from the subset rare.
 ```
 
-    ## 
-    ## TRUE 
-    ##    8
+The optional non-genetic component
+----------------------------------
 
-## The optional non-genetic component
-
-The effect of other observed variables influencing \(Y_t\) can
+The effect of other observed variables influencing *Y*<sub>*t*</sub> can
 optionally be given to `ULPS()` as an N x T matrix `C`, the columns of
-which are \(C_t\). When \(C_t\) and \(X\) are not independent, the
-non-genetic component is a confounder between \(X\) and \(Y_t\), and the
-proportion of variance causally explained is less than the additive
-heritability. As an example, we model a population stratification
-confounder effect increasing over time using the two principal
-components.
+which are *C*<sub>*t*</sub>. When *C*<sub>*t*</sub> and *X* are not
+independent, the non-genetic component is a confounder between *X* and
+*Y*<sub>*t*</sub>, and the proportion of variance causally explained is
+less than the additive heritability. As an example, we model a
+population stratification confounder effect increasing over time using
+the two principal components.
 
 ``` r
 confounder <- pca[, 1] %*% rbind(seq(200, 600, 100)) + pca[, 2] %*% rbind(seq(100, 700, 150))
 ```
 
-## The residual component
+The residual component
+----------------------
 
 We model residual autocorrelation between time points as a Gaussian
 process, residuals between individuals are independent. The function
@@ -439,7 +293,8 @@ library(ULPS) # Come on the function is there I know it is.
 residual <- residual_kernel(rep(3, 5), "o-u", 10, sample = FALSE)
 ```
 
-## The phenotypes
+The phenotypes
+--------------
 
 The phenotype can now be simulated using the function `ULPS()`.
 
@@ -448,11 +303,11 @@ pheno <- ULPS(table, poly, residual) # Without confounders.
 confounded_pheno <- ULPS(table, poly, residual, confounder) # Stratification by population structure.
 ```
 
-Don’t knwo what to wwrite here yet. Maybe plot some phenotypes somehow.
+Don’t know what to write here yet. Maybe plot some phenotypes somehow.
 Here’s a TODO list: 1. Update all packages and R itself. 2. Make
 `residual_kernel()` option `sample = S` work, and using `ggplot()`
-instead of base plot. 3. Document all functions, use
-(<span class="citeproc-not-found" data-reference-id="seealso">**???**</span>)
+instead of base plot. 3. Document all functions, use (<span
+class="citeproc-not-found" data-reference-id="seealso">**???**</span>)
 
 ``` r
 library(devtools)
@@ -460,64 +315,32 @@ library(roxygen2)
 document()
 ```
 
-<div id="refs" class="references">
-
-<div id="ref-bertolini2018signatures">
-
 Bertolini, Francesca, Bertrand Servin, Andrea Talenti, Estelle Rochat,
 Eui Soo Kim, Claire Oget, Isabelle Palhière, et al. 2018. “Signatures of
 Selection and Environmental Adaptation Across the Goat Genome
 Post-Domestication.” *Genetics Selection Evolution* 50 (1): 1–24.
-
-</div>
-
-<div id="ref-fields">
 
 Douglas Nychka, Reinhard Furrer, John Paige, and Stephan Sain. 2021.
 “Fields: Tools for Spatial Data.” Boulder, CO, USA: University
 Corporation for Atmospheric Research.
 <https://github.com/dnychka/fieldsRPackage>.
 
-</div>
-
-<div id="ref-ULPS">
-
 Leppälä, Karhunen, Arjas. 2022. “Uniform Longitudinal Phenotype
 Simulator.” *I Hope It’ll Be Published Somewhere, Aiming at
 Bioinformatcs* ? (?): ?–?
-
-</div>
-
-<div id="ref-opgen2007accurate">
 
 Opgen-Rhein, Rainer, and Korbinian Strimmer. 2007. “Accurate Ranking of
 Differentially Expressed Genes by a Distribution-Free Shrinkage
 Approach.” *Statistical Applications in Genetics and Molecular Biology*
 6 (1).
 
-</div>
-
-<div id="ref-schafer2005shrinkage">
-
 Schäfer, Juliane, and Korbinian Strimmer. 2005. “A Shrinkage Approach to
 Large-Scale Covariance Matrix Estimation and Implications for Functional
 Genomics.” *Statistical Applications in Genetics and Molecular Biology*
 4 (1).
 
-</div>
-
-<div id="ref-ggplot2">
-
 Wickham, Hadley. 2016. *Ggplot2: Elegant Graphics for Data Analysis*.
 Springer-Verlag New York. <https://ggplot2.tidyverse.org>.
 
-</div>
-
-<div id="ref-devtools">
-
 Wickham, Hadley, Jim Hester, Winston Chang, and Jennifer Bryan. 2022.
 *Devtools: Tools to Make Developing R Packages Easier*.
-
-</div>
-
-</div>
