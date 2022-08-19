@@ -104,7 +104,7 @@ vector of P genetic effects, *C*<sub>*t*</sub> are other observed
 effects at time point *t*, and *ε*<sub>*t*</sub> is the vector of
 residuals, each generated independently by a Gaussian process over time.
 The phenotypic variance causally explained by the term
-*X**β*<sub>*t*</sub> is *β*<sup>⊤</sup>*R**β*, where *R* is the linkage
+*X* *β*<sub>*t*</sub> is *β*<sup>⊤</sup>*Rβ*, where *R* is the linkage
 disequilibrium matrix between the variants. Note that *C*<sub>*t*</sub>
 and *X* need not be independent, in which case dividing the causally
 explained variance by the total phenotypic variance doesn’t equal
