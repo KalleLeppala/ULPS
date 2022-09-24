@@ -2,22 +2,17 @@
 % Please edit documentation in R/stable_covariance.R
 \name{stable_covariance}
 \alias{stable_covariance}
-\title{Description
-The functions cov.shrink, cor.shrink, and pcor.shrink implement a shrinkage approach to estimate covariance and (partial) correlation matrices, as suggested in Schaefer and Strimmer (2005). The advantages of using this approach in comparison with the standard empirical estimates (cov and cor) are that the shrinkage estimates
-are always positive definite,
-well conditioned (so that the inverse always exists), and
-exhibit (sometimes dramatically) better mean squared error.
-Furthermore, they are inexpensive to compute and do not require any tuning parameters (the shrinkage intensity is analytically estimated from the data).
-export}
+\title{Stable covariance}
 \usage{
 stable_covariance(M)
 }
+\arguments{
+\item{M}{An A x B data matrix.}
+}
+\value{
+A B x B positive definite matrix that estimates the covariance matrix of the distribution that produced \code{M}.
+}
 \description{
-Description
-The functions cov.shrink, cor.shrink, and pcor.shrink implement a shrinkage approach to estimate covariance and (partial) correlation matrices, as suggested in Schaefer and Strimmer (2005). The advantages of using this approach in comparison with the standard empirical estimates (cov and cor) are that the shrinkage estimates
-are always positive definite,
-well conditioned (so that the inverse always exists), and
-exhibit (sometimes dramatically) better mean squared error.
-Furthermore, they are inexpensive to compute and do not require any tuning parameters (the shrinkage intensity is analytically estimated from the data).
-export
+The sample covariance matrices needed by various functions of the package are sometimes not positive definite, for actual or numeric reasons.
+We use the functions \code{is.positive.definite()} and \code{cov.shrink()} from the package \code{corpcor} to identify and fix the issue.
 }

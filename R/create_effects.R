@@ -1,17 +1,25 @@
-#' Auxiliary function for simulating effect sizes using c distinct ''effectiveness classes''
+#' Create effects
 #'
-#' @param LD Either a centered and scaled n x p genotype matrix or a p x p matrix of correlation coefficients between the p genetic variants from an external source.
-#' @param amounts A c x t matrix of the number of QTL:s in each effectiveness class at each time point.
-#' @param variances A c x t matrix of variances each effectiveness class explains ignoring the LD with other classes.
-#' @param changes A c x (t - 1) matrix containing the number of QTL:s that change between time points in each effectiveness class, in addition to changes dictated by the matrix amounts.
-#'                Must have changes[i, j] at most min(amounts[i, j], amounts[i, j + 1]). Not required when t = 1.
-#' @param shuffles A c x (t - 1) logical matrix coding whether the QTL:s that are kept between time points have their effects re-randomized or not.
-#'                 Not required when t = 1.
-#' @param subsets A list of c subsets of the set {1, ..., p} to which indices of the QTL:s of each effectiveness class are restricted. By default there are no restrictions.
+#' Auxiliary function for simulating effect sizes using C distinct ''effectiveness classes'' over time.
+#' Variants within an effectiveness class at a given time point explain a predetermined amount of phenotypic variance,
+#' sampled from maximum entropy distribution (the uniform distribution) with a rejection sampling scheme.
+#' The composition of the effectiveness classes is controlled by the user.
+#'
+#' @param LD Either a centered and scaled N x P genotype matrix or a P x P matrix of correlation coefficients between the P genetic variants from an external source.
+#' @param amounts A C x T matrix of the number of QTL:s in each effectiveness class at each time point.
+#' @param variances A C x T matrix of variances each effectiveness class explains ignoring the LD with other classes.
+#' @param changes A C x (T - 1) matrix containing the number of QTL:s that change between time points in each effectiveness class, in addition to changes dictated by the matrix `amounts`.
+#'                Must have `changes[i, j]` at most `min(amounts[i, j], amounts[i, j + 1])`. Not required when T = 1.
+#' @param shuffles A C x (T - 1) logical matrix coding whether the QTL:s that are kept between time points have their effects re-randomized or not.
+#'                 Not required when T = 1.
+#' @param subsets A list of C subsets of the set {1, ..., P} to which indices of the QTL:s of each effectiveness class are restricted. By default there are no restrictions.
 #' @param max_reject Maximum number of times the rejection sampling loop is executed. If reached, accepts the sample but gives a warning. Default value 100.
-#' @param prioritize_total_variance If TRUE, will scale the effect sizes so that the variance explained by all the effectiveness classes jointly is the column sum of variances.
+#' @param prioritize_total_variance If TRUE, will scale the effect sizes so that the variance explained by all the effectiveness classes jointly is the column sum of the matrix `variances`.
 #'                                  At the cost of accuracy on the variance explained by classes individually. Default value FALSE.
-#' @return A p x t matrix of effect sizes.
+#' @return A list of three matrices: columns of `loci` are the QTL locations at a time point, columns of `size` are the corresponding effect sizes,
+#'         and the columns of the P x T matrix `beta` are the effect size vector of all P variants. That is, `beta[loci[i, t], t] = size[i, t]` for all t and i small enough, otherwise `beta[j, t]` is zero.
+#'
+#' @seealso \code{\link[ULPS()]{ULPS}}, \code{\link[residual_kernel()]{residual_kernel}}, \code{\link[check_explained_variance()]{check_explained_variance}}, \code{\link[plot_effects()]{plot_effects}}
 #'
 #' @export
 create_effects <- function(LD, amounts, variances, changes = NA, shuffles = NA, subsets = NA, max_reject = 100, prioritize_total_variance = FALSE) {

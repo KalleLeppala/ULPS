@@ -1,12 +1,13 @@
-#' Description
-#' The functions cov.shrink, cor.shrink, and pcor.shrink implement a shrinkage approach to estimate covariance and (partial) correlation matrices, as suggested in Schaefer and Strimmer (2005). The advantages of using this approach in comparison with the standard empirical estimates (cov and cor) are that the shrinkage estimates
-#' are always positive definite,
-#' well conditioned (so that the inverse always exists), and
-#' exhibit (sometimes dramatically) better mean squared error.
-#' Furthermore, they are inexpensive to compute and do not require any tuning parameters (the shrinkage intensity is analytically estimated from the data).
-#' export
+#' Stable covariance
+#'
+#' The sample covariance matrices needed by various functions of the package are sometimes not positive definite, for actual or numeric reasons.
+#' We use the functions `is.positive.definite()` and `cov.shrink()` from the package `corpcor` to identify and fix the issue.
+#'
+#' @param M An A x B data matrix.
+#' @return A B x B positive definite matrix that estimates the covariance matrix of the distribution that produced `M`.
+#'
+#' @export
 stable_covariance <- function(M) {
-	# Is it better to only use shrinkage if the covariance matrix is not positive definite, or to always use it?
 	MMT <- cov(M)
 	if (is.positive.definite(MMT) == FALSE) {
 		warning("An LD matrix was not positive definite. Shrinking.")

@@ -1,5 +1,14 @@
+#' Plot effects
+#'
+#' Visualizes the effects of QTL:s from various effectiveness classes over time.
+#'
+#' @param effects A list of three matrices, the result created by the function `create_effects()`.
+#' @param palette The palette used for plotting. Default is the inclusive Okabe-Ito palette without black.
+#' @return Returns the ggplot.
+#'
+#' @seealso \code{\link[create_effects()]{create_effects}}
+#'
 #' @export
-# Oletuspaletti tunnetaan nimellä Okabe-Ito (Okabe & Ito 2008) ja sen pitäisi olla inklusiivinen.
 plot_effects <- function(effects, palette = palette.colors()[2:9]) {
 	loci <- effects$loci
 	size <- effects$size
@@ -39,13 +48,20 @@ plot_effects <- function(effects, palette = palette.colors()[2:9]) {
   	}
   } # ...I'm not proud of this!
   df$odd <- odd
-  df$even <- even
+  df$even <- even + NROW(df)
   df <- df[order(df$class), ]
-	figure <- ggplot(df, aes(x = time, y = effect)) +
+  come_on_now <- c(df$class, df$class)
+  come_on_now <- setNames(come_on_now, c(as.character(df$odd), as.character(df$even)))
+  df$odd <- factor(df$odd)
+  df$even <- factor(df$even)
+  df$effects <- df$effect
+	figure <- ggplot(df, aes(x = time, y = effects)) +
             theme_classic() +
 	          theme(legend.position = "none") +
-	          geom_line(aes(group = odd, color = class)) +
-            geom_line(aes(group = even, color = class)) +
-            geom_point(aes(color = class))
+	          geom_line(aes(group = odd, colour = odd)) +
+            geom_line(aes(group = even, colour = even)) +
+        	  scale_color_manual(values = come_on_now) +
+            geom_point(colour = df$class)
 	suppressMessages(print(figure))
+	return(figure)
 }

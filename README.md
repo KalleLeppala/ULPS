@@ -1,7 +1,7 @@
 ULPS guide
 ================
 Kalle Leppälä
-August 19, 2022
+September 24, 2022
 
 This is a tutorial of the R package *ULPS* (Uniform Longitudinal
 Phenotype Simulator) ([Leppälä 2022](#ref-ULPS)). You can simulate
@@ -96,7 +96,7 @@ ggplot(pca, aes(x = PC1, y = PC2, fill = population)) +
 
 The underlying model of *ULPS* is
 
-*Y*<sub>*t*</sub> = *C*<sub>*t*</sub> + *X**β*<sub>*t*</sub> + *ε*<sub>*t*</sub>,
+*Y*<sub>*t*</sub> = *C*<sub>*t*</sub> + *Xβ*<sub>*t*</sub> + *ε*<sub>*t*</sub>,
 
 where *Y*<sub>*t*</sub> are the N phenotypes at time point *t*, *X* is
 the centered and scaled N x P genotype matrix, *β*<sub>*t*</sub> is the
@@ -104,7 +104,7 @@ vector of P genetic effects, *C*<sub>*t*</sub> are other observed
 effects at time point *t*, and *ε*<sub>*t*</sub> is the vector of
 residuals, each generated independently by a Gaussian process over time.
 The phenotypic variance causally explained by the term
-*X* *β*<sub>*t*</sub> is *β*<sup>⊤</sup>*Rβ*, where *R* is the linkage
+*Xβ*<sub>*t*</sub> is *β*<sup>⊤</sup>*Rβ*, where *R* is the linkage
 disequilibrium matrix between the variants. Note that *C*<sub>*t*</sub>
 and *X* need not be independent, in which case dividing the causally
 explained variance by the total phenotypic variance doesn’t equal
@@ -134,25 +134,58 @@ variances <- rbind(rep(1, 5)) # At each time point, the variance explained by th
 changes <- rbind(rep(1000, 4)) # Between time points, all causal variants are re-randomized.
 shuffles <- rbind(rep(TRUE, 4)) # This does nothing for now since no variants are kept between time points.
 poly <- create_effects(table, amounts, variances, changes, shuffles) # Calling the function.
+```
+
+    ## [1] "Class 1, time point 1 done."
+    ## [1] "Class 1, time point 2 done."
+    ## [1] "Class 1, time point 3 done."
+    ## [1] "Class 1, time point 4 done."
+    ## [1] "Class 1, time point 5 done."
+
+``` r
 check_explained_variance(table, poly, 1, 1) # Sanity checks.
+```
+
+    ## [1] "Time point 1, class 1: variance = 1, sum of squared effects = 1.75723817453297"
+
+``` r
 check_explained_variance(table, poly, 2, 1)
+```
+
+    ## [1] "Time point 2, class 1: variance = 1, sum of squared effects = 1.95362099342017"
+
+``` r
 check_explained_variance(table, poly, 3, 1)
+```
+
+    ## [1] "Time point 3, class 1: variance = 1, sum of squared effects = 1.85978620522639"
+
+``` r
 check_explained_variance(table, poly, 4, 1)
+```
+
+    ## [1] "Time point 4, class 1: variance = 1, sum of squared effects = 1.83415719616529"
+
+``` r
 check_explained_variance(table, poly, 5, 1)
 ```
 
+    ## [1] "Time point 5, class 1: variance = 0.999999999999997, sum of squared effects = 1.75067168722771"
+
 Now `poly$loci` contains the causal variant location vectors and
 `poly$size` contains the causal variant effect size vectors. These are
-combined in the PxT matrix `poly$beta`, the columns of which are
+combined in the P x T matrix `poly$beta`, the columns of which are
 *β*<sub>*t*</sub>.
 
 The function `check_explained_variance()` calculates the variance
 causally explained by this polygenic signal of 1000 variants at the five
 time points. Taking the linkage disequilibrium into account we get 1.00
 at each time point as intended. Note that the simple sum of squared
-effect sizes vary from 1.75 to 1.95: under the maximum entropy
-distribution the causal effects were on average larger than what we’d
-expect if we assumed independence instead.
+effect sizes vary from 1.75 to 1.95: because of the linkage distribution
+the effects were on average larger than what we’d expect if we assumed
+independence instead. Using the maximum entropy distribution is further
+increasing the average effect size compared to scaling independent
+normally distributed effects to account for the linkage disequilibrium.
 
 Next we add an olicogenic signal parallel to the polygenic one. The
 arguments above were matrices with only one row, because we only had one
@@ -166,12 +199,61 @@ variances <- rbind(rep(1, 5), c(4, 3, 2, 1, 0)) # The variance explained by the 
 changes <- rbind(rep(1000, 4), c(1, 1, 1, 0)) # Between time points, one causal variant is replaced with a new one, except between time points 4 and 5 when there's nothing left to change.
 shuffles <- rbind(rep(TRUE, 4), rep(FALSE, 4)) # The causal variants of the olicogenic signal that are kept between time points keep their effect size as well.
 olico <- create_effects(table, amounts, variances, changes, shuffles)
+```
+
+    ## [1] "Class 1, time point 1 done."
+    ## [1] "Class 2, time point 1 done."
+    ## [1] "Class 1, time point 2 done."
+    ## [1] "Class 2, time point 2 done."
+    ## [1] "Class 1, time point 3 done."
+
+    ## Warning in create_effects(table, amounts, variances, changes, shuffles): Because of the effects that are kept, class 2 at time 3 explains more variance than is allocated for it.
+    ##   Consider re-running the simulation.
+
+    ## [1] "Class 2, time point 3 done."
+    ## [1] "Class 1, time point 4 done."
+    ## [1] "Class 2, time point 4 done."
+    ## [1] "Class 1, time point 5 done."
+    ## [1] "Class 2, time point 5 done."
+
+``` r
 check_explained_variance(table, olico, 1, 2) # Sanity checks on the olicogenic signal.
+```
+
+    ## [1] "Time point 1, class 2: variance = 4, sum of squared effects = 3.63882531496903"
+
+``` r
 check_explained_variance(table, olico, 2, 2)
+```
+
+    ## [1] "Time point 2, class 2: variance = 3, sum of squared effects = 3.0719539626099"
+
+``` r
 check_explained_variance(table, olico, 3, 2)
+```
+
+    ## [1] "Time point 3, class 2: variance = 2.61308745063856, sum of squared effects = 2.72779072339269"
+
+``` r
 check_explained_variance(table, olico, 4, 2)
+```
+
+    ## [1] "Time point 4, class 2: variance = 1, sum of squared effects = 0.995628927329089"
+
+``` r
 check_explained_variance(table, olico, 5, 2)
-plot_effects(olico) # Visualization of the effect sizes.
+```
+
+    ## [1] "Time point 5, class 2: variance = 0, sum of squared effects = 0 (empty set)"
+
+``` r
+nothing <- plot_effects(olico) # Visualization of the effect sizes.
+```
+
+![](README_files/figure-gfm/olicogenic-1.png)<!-- -->
+
+``` r
+# (Assigning the result to variable nothing so the plot won't show twice.)
 ```
 
 The warning is because the function proceeds step-wise over time points
@@ -195,19 +277,61 @@ specifying the class.
 
 ``` r
 check_explained_variance(table, olico, 1, 1) # Variance explained by the polygenic signal is 1.00 at time point 1.
+```
+
+    ## [1] "Time point 1, class 1: variance = 1, sum of squared effects = 1.91953535482851"
+
+``` r
 check_explained_variance(table, olico, 1, 2) # Variance explained by the olicogenic signal is 4.00 at time point 1.
+```
+
+    ## [1] "Time point 1, class 2: variance = 4, sum of squared effects = 3.63882531496903"
+
+``` r
 check_explained_variance(table, olico, 1) # Variance explained by the signals together at time point 1 is not exactly 5.00.
 ```
+
+    ## [1] "Time point 1, all classes together: variance = 4.90907827139716, sum of squared effects = 5.55836066979754"
 
 We can choose to prioritize the variance explained by classes together
 using the optional parameter `prioritize_total_variance`:
 
 ``` r
 olico_tot <- create_effects(table, amounts, variances, changes, shuffles, prioritize_total_variance = TRUE)
+```
+
+    ## [1] "Class 1, time point 1 done."
+    ## [1] "Class 2, time point 1 done."
+    ## [1] "Class 1, time point 2 done."
+    ## [1] "Class 2, time point 2 done."
+    ## [1] "Class 1, time point 3 done."
+
+    ## Warning in create_effects(table, amounts, variances, changes, shuffles, : Because of the effects that are kept, class 2 at time 3 explains more variance than is allocated for it.
+    ##   Consider re-running the simulation.
+
+    ## [1] "Class 2, time point 3 done."
+    ## [1] "Class 1, time point 4 done."
+    ## [1] "Class 2, time point 4 done."
+    ## [1] "Class 1, time point 5 done."
+    ## [1] "Class 2, time point 5 done."
+
+``` r
 check_explained_variance(table, olico_tot, 1, 1) # Now these two are a little bit off.
+```
+
+    ## [1] "Time point 1, class 1: variance = 0.992328604627623, sum of squared effects = 1.84536416259209"
+
+``` r
 check_explained_variance(table, olico_tot, 1, 2)
+```
+
+    ## [1] "Time point 1, class 2: variance = 3.9693144185105, sum of squared effects = 3.65893530671892"
+
+``` r
 check_explained_variance(table, olico_tot, 1) # It's the cost of this one being exact.
 ```
+
+    ## [1] "Time point 1, all classes together: variance = 5, sum of squared effects = 5.504299469311"
 
 It’s conceivable that the olicogenic signal comprises of rarer variants
 than the polygenic one. If you want to restrict effectiveness classes to
@@ -218,9 +342,37 @@ common <- which(apply(table, 2, min) >= - 1.25) # 7309 columns including commone
 rare <- which(apply(table, 2, min) < - 1.25) # 1105 columns including rarer variants.
 subsets <- list(common, rare)
 olico_sep <- create_effects(table, amounts, variances, changes, shuffles, subsets = subsets)
+```
+
+    ## Warning in if (is.na(subsets) == TRUE) {: the condition has length > 1 and only
+    ## the first element will be used
+
+    ## [1] "Class 1, time point 1 done."
+    ## [1] "Class 2, time point 1 done."
+    ## [1] "Class 1, time point 2 done."
+    ## [1] "Class 2, time point 2 done."
+    ## [1] "Class 1, time point 3 done."
+    ## [1] "Class 2, time point 3 done."
+    ## [1] "Class 1, time point 4 done."
+    ## [1] "Class 2, time point 4 done."
+    ## [1] "Class 1, time point 5 done."
+    ## [1] "Class 2, time point 5 done."
+
+``` r
 table(olico_sep$loci[[1]][[1]] %in% common) # The class 1 (polygenic signal) at time point 1 is now entirely sampled from the subset common.
+```
+
+    ## 
+    ## TRUE 
+    ## 1000
+
+``` r
 table(olico_sep$loci[[2]][[1]] %in% rare) # The class 2 (olicogenic signal) at time point 1 is now entirely sampled from the subset rare.
 ```
+
+    ## 
+    ## TRUE 
+    ##    8
 
 ## The optional non-genetic component
 
@@ -249,31 +401,108 @@ matrix: “noise” is white noise (identity matrix), “squared” is the
 squared exponential model, “o-u” is the Ornstein–Uhlenbeck -model, and
 “matern” is the Matérn model.
 
+The function `residual_kernel()` returns the covariance matrix between
+time points when parameter `sample` is the default value “FALSE”. When
+`sample` a positive integer, `residual_kernel()` instead visualizes
+independent samples using the covariance matrix.
+
 ``` r
-library(ULPS) # Come on the function is there I know it is.
-residual <- residual_kernel(rep(3, 5), "o-u", 10, sample = FALSE)
+nothing <- residual_kernel(rep(1, 50), "noise", sample = 5) # Noise.
+```
+
+![](README_files/figure-gfm/residual-1.png)<!-- -->
+
+``` r
+nothing <- residual_kernel(rep(1, 50), "squared", 10, sample = 5) # Squared exponential.
+```
+
+![](README_files/figure-gfm/residual-2.png)<!-- -->
+
+``` r
+nothing <- residual_kernel(rep(1, 50), "o-u", 10, sample = 5) # Ornstein-Uhlenbeck.
+```
+
+![](README_files/figure-gfm/residual-3.png)<!-- -->
+
+``` r
+nothing <- residual_kernel(rep(1, 50), "matern", c(10, 10), sample = 5) # Matérn.
+```
+
+    ## Warning in residual_kernel(rep(1, 50), "matern", c(10, 10), sample = 5): A
+    ## residual autocorrelation matrix was not positive definite. Shrinking.
+
+![](README_files/figure-gfm/residual-4.png)<!-- -->
+
+For the next section, let’s make a covariance matrix using the
+Ornstein-Uhlenbeck-kernel with five time points, variance parameter 3
+and range parameter 5.
+
+``` r
+residual <- residual_kernel(rep(3, 5), "o-u", 5)
 ```
 
 ## The phenotypes
 
-The phenotype can now be simulated using the function `ULPS()`.
+The phenotype can now be simulated using the function `ULPS()`. The
+result is an N x T matrix of simulated phenotypes, the columns of which
+are *Y*<sub>*t*</sub>.
 
 ``` r
 pheno <- ULPS(table, poly, residual) # Without confounders.
 confounded_pheno <- ULPS(table, poly, residual, confounder) # Stratification by population structure.
 ```
 
-Don’t know what to write here yet. Maybe plot some phenotypes somehow.
-Here’s a TODO list: 1. Update all packages and R itself. 2. Make
-`residual_kernel()` option `sample = S` work, and using `ggplot()`
-instead of base plot. 3. Document all functions, use
-([**seealso?**](#ref-seealso))
+As a sanity check, we can try to recover the variance components at time
+point 1 using for example the
+[*rrBLUP*](https://CRAN.R-project.org/package=rrBLUP) package ([Endelman
+2011](#ref-rrBLUP)).
 
 ``` r
-library(devtools)
-library(roxygen2)
-document()
+library(rrBLUP)
+K <- (table %*% t(table))/NCOL(table)
+result <- mixed.solve(pheno[, 1], K = K)
+str(result)
 ```
+
+    ## List of 5
+    ##  $ Vu  : num 0.917
+    ##  $ Ve  : num 3.22
+    ##  $ beta: num [1(1d)] -0.0697
+    ##  $ u   : num [1:4653(1d)] -0.558 -0.298 0.22 -0.683 0.373 ...
+    ##   ..- attr(*, "dimnames")=List of 1
+    ##   .. ..$ : chr [1:4653] "ET_ABR0001" "ET_ABR0002" "ET_ABR0003" "ET_ABR0004" ...
+    ##  $ LL  : num -9776
+
+``` r
+var(pheno[, 1])
+```
+
+    ## [1] 3.985786
+
+``` r
+confounded_result <- mixed.solve(confounded_pheno[, 1], K = K)
+str(confounded_result)
+```
+
+    ## List of 5
+    ##  $ Vu  : num 1.81
+    ##  $ Ve  : num 2.83
+    ##  $ beta: num [1(1d)] 0.0162
+    ##  $ u   : num [1:4653(1d)] -2.537 -0.722 -0.93 -2.043 -1.866 ...
+    ##   ..- attr(*, "dimnames")=List of 1
+    ##   .. ..$ : chr [1:4653] "ET_ABR0001" "ET_ABR0002" "ET_ABR0003" "ET_ABR0004" ...
+    ##  $ LL  : num -9875
+
+``` r
+var(confounded_pheno[, 1])
+```
+
+    ## [1] 14.58883
+
+In the first example, the estimated variance components were close to
+the correct values 1 In the second example, confounding by the vector
+*C*<sub>1</sub> made estimates worse. The mixed model method implicitly
+assumes the effect sizes are normally distributed.
 
 ## References
 
@@ -294,6 +523,13 @@ Douglas Nychka, Reinhard Furrer, John Paige, and Stephan Sain. 2021.
 “Fields: Tools for Spatial Data.” Boulder, CO, USA: University
 Corporation for Atmospheric Research.
 <https://github.com/dnychka/fieldsRPackage>.
+
+</div>
+
+<div id="ref-rrBLUP" class="csl-entry">
+
+Endelman, J. B. 2011. “Ridge Regression and Other Kernels for Genomic
+Selection with r Package rrBLUP.” *Plant Genome* 4: 250–55.
 
 </div>
 

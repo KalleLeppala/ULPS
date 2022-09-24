@@ -2,14 +2,15 @@
 % Please edit documentation in R/residual_kernel.R
 \name{residual_kernel}
 \alias{residual_kernel}
-\title{Covariance matrices for residual autocorrelation between time points}
+\title{Residual kernel}
 \usage{
 residual_kernel(
   variances,
   type = "noise",
   params = NA,
   points = NA,
-  sample = FALSE
+  sample = FALSE,
+  palette = palette.colors()[2:9]
 )
 }
 \arguments{
@@ -19,18 +20,37 @@ first a matrix K with unit diagonal elements is created and then all rows and co
 
 \item{type}{Determines the kernel function of the Gaussian process. Available options are:
 \itemize{
-\item "noise" White Gaussian noise. The matrix K is the T x T identity matrix. The default option.
-\item "squared" Squared exponential kernel, also known as radial basis function kernel or Gaussian kernel
-The (i, j)-element of K is defined as
-\item "o-u" The Ornstein-Uhlenbeck -kernel.
+\item "noise" White Gaussian noise. The matrix K is the T x T identity matrix. No \code{params} needed. The default option.
+\item "squared" Squared exponential kernel, also known as radial basis function kernel or Gaussian kernel.
+The (i, j)-element of K is defined as \out{exp(-0.5 d(i, j)<sup>2</sup> / l<sup>2</sup>)},
+where d(i, j) is \code{points[j] - points[i]} and l is the range parameter \code{params[1]}, the only parameter needed for \code{type} "squared".
+\item "o-u" The Ornstein-Uhlenbeck -kernel, also known as the AR(1)-kernel.
+The (i, j)-element of K is defined as \out{exp(-0.5 |d(i, j)| / l)},
+where d(i, j) is \code{points[j] - points[i]} and l is the range parameter \code{params[1]}, the only parameter needed for \code{type} "o-u".
+\item "matern" The Mat\out{&#233;}rn-kernel.
+The (i, j)-element of K is defines as \out{    2<sup>1- &#957;</sup> (sqrt(2&#957;)|d(i, j)|/l) K<sub>&#957;</sub>((sqrt(2&#957;)|d(i, j)|/l))<sup>&#957;</sup>  / &#915;(&#957;)},
+where \out{K<sub>&#957;</sub>()} is the modified Bessel function, \out{&#915;()} is the Gamma-function, d(i, j) is \code{points[j] - points[i]},
+\out{&#957;} is the smoothness parameter \code{params[1]} and the l is the range parameter \code{params[2]}.
 }}
 
-\item{params}{The parameters
-\itemize{
-\item parameter 1 stuff
-\item parameter 2 stuff
-}}
+\item{params}{The parameters required, the amount and meaning of which depends on \code{type}.}
+
+\item{points}{An optional T-vector if the time points are not evenly spaced.
+By default, distance between consecutive time points is one unit from the range parameters point of view.}
+
+\item{sample}{The function can visualize samples of the Gaussian process.
+The positive integer given is the number of independent samples, the default value FALSE produces no plot.}
+
+\item{palette}{The palette used for plotting. Default is the inclusive Okabe-Ito palette without black.}
+}
+\value{
+A T x T covariance matrix if \code{sample} is FALSE, a ggplot if it's a positive integer.
 }
 \description{
-Returns the covariance matrix of the normally distributed residuals of a single sample over time points.
+Creates a covariance matrix of the independent normally distributed residuals autocorrelated over time points.
+Four kernel functions available for the generation of this matrix.
+Also able to visualize independent samples using the matrix created.
+}
+\seealso{
+\code{\link[ULPS()]{ULPS}}, \code{\link[create_effects()]{create_effects}}
 }

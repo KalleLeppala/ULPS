@@ -1,3 +1,16 @@
+#' Check explained variance
+#'
+#' Prints the amount \out{&#946;<sup>T</sup> R &#946;} of variance a set of QTL:s explain.
+#' Here \out{&#946;} is the effect size vector of those variants, and R is their linkage disequilibrium matrix.
+#' Also prints the sum of squared effect sizes (the amount of variance the QTL:s would explain if we disregarded LD) for comparison.
+#'
+#' @param LD Either a centered and scaled N x P genotype matrix or a P x P matrix of correlation coefficients between the P genetic variants from an external source.
+#' @param effects A list of three matrices, the result created by the function `create_effects()`.
+#' @param j The time point.
+#' @param i The effectiveness class; if not provided will consider all classes lumped together.
+#'
+#' @seealso \code{\link[create_effects()]{create_effects}}
+#'
 #' @export
 check_explained_variance <- function(LD, effects, j, i) {
 	loci <- effects$loci; size <- effects$size
@@ -28,8 +41,3 @@ check_explained_variance <- function(LD, effects, j, i) {
 		print(paste("Time point ", j, ", class ", i, ": variance = 0, sum of squared effects = 0 (empty set)", sep = ""))
 	}
 }
-# MUUTA SAMPLE = TRUE MIELUMMIN LUKUMÄÄRÄKSI
-
-
-
-

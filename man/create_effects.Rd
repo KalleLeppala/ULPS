@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_effects.R
 \name{create_effects}
 \alias{create_effects}
-\title{Auxiliary function for simulating effect sizes using c distinct ''effectiveness classes''}
+\title{Create effects}
 \usage{
 create_effects(
   LD,
@@ -16,28 +16,35 @@ create_effects(
 )
 }
 \arguments{
-\item{LD}{Either a centered and scaled n x p genotype matrix or a p x p matrix of correlation coefficients between the p genetic variants from an external source.}
+\item{LD}{Either a centered and scaled N x P genotype matrix or a P x P matrix of correlation coefficients between the P genetic variants from an external source.}
 
-\item{amounts}{A c x t matrix of the number of QTL:s in each effectiveness class at each time point.}
+\item{amounts}{A C x T matrix of the number of QTL:s in each effectiveness class at each time point.}
 
-\item{variances}{A c x t matrix of variances each effectiveness class explains ignoring the LD with other classes.}
+\item{variances}{A C x T matrix of variances each effectiveness class explains ignoring the LD with other classes.}
 
-\item{changes}{A c x (t - 1) matrix containing the number of QTL:s that change between time points in each effectiveness class, in addition to changes dictated by the matrix amounts.
-Must have changes\link{i, j} at most min(amounts\link{i, j}, amounts\link{i, j + 1}). Not required when t = 1.}
+\item{changes}{A C x (T - 1) matrix containing the number of QTL:s that change between time points in each effectiveness class, in addition to changes dictated by the matrix \code{amounts}.
+Must have \code{changes[i, j]} at most \code{min(amounts[i, j], amounts[i, j + 1])}. Not required when T = 1.}
 
-\item{shuffles}{A c x (t - 1) logical matrix coding whether the QTL:s that are kept between time points have their effects re-randomized or not.
-Not required when t = 1.}
+\item{shuffles}{A C x (T - 1) logical matrix coding whether the QTL:s that are kept between time points have their effects re-randomized or not.
+Not required when T = 1.}
 
-\item{subsets}{A list of c subsets of the set {1, ..., p} to which indices of the QTL:s of each effectiveness class are restricted. By default there are no restrictions.}
+\item{subsets}{A list of C subsets of the set {1, ..., P} to which indices of the QTL:s of each effectiveness class are restricted. By default there are no restrictions.}
 
 \item{max_reject}{Maximum number of times the rejection sampling loop is executed. If reached, accepts the sample but gives a warning. Default value 100.}
 
-\item{prioritize_total_variance}{If TRUE, will scale the effect sizes so that the variance explained by all the effectiveness classes jointly is the column sum of variances.
+\item{prioritize_total_variance}{If TRUE, will scale the effect sizes so that the variance explained by all the effectiveness classes jointly is the column sum of the matrix \code{variances}.
 At the cost of accuracy on the variance explained by classes individually. Default value FALSE.}
 }
 \value{
-A p x t matrix of effect sizes.
+A list of three matrices: columns of \code{loci} are the QTL locations at a time point, columns of \code{size} are the corresponding effect sizes,
+and the columns of the P x T matrix \code{beta} are the effect size vector of all P variants. That is, \code{beta[loci[i, t], t] = size[i, t]} for all t and i small enough, otherwise \code{beta[j, t]} is zero.
 }
 \description{
-Auxiliary function for simulating effect sizes using c distinct ''effectiveness classes''
+Auxiliary function for simulating effect sizes using C distinct ''effectiveness classes'' over time.
+Variants within an effectiveness class at a given time point explain a predetermined amount of phenotypic variance,
+sampled from maximum entropy distribution (the uniform distribution) with a rejection sampling scheme.
+The composition of the effectiveness classes is controlled by the user.
+}
+\seealso{
+\code{\link[ULPS()]{ULPS}}, \code{\link[residual_kernel()]{residual_kernel}}, \code{\link[check_explained_variance()]{check_explained_variance}}, \code{\link[plot_effects()]{plot_effects}}
 }
