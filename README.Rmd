@@ -177,12 +177,13 @@ We model residual autocorrelation between time points as a Gaussian process, res
 
 The function `residual_kernel()` returns the covariance matrix between time points when parameter `sample` is the default value "FALSE". When `sample` a positive integer,
 `residual_kernel()` instead visualizes independent samples using the covariance matrix.
+Option "noise" needs no parameters, other options need a range parameter determining how far points meaningfully affect one another (here 10), and option "matern" also needs a smoothness parameter determining how differentiable the curve is (here 5, differentiable 4 times).
 
 ```{r residual}
 nothing <- residual_kernel(rep(1, 50), "noise", sample = 5) # Noise.
 nothing <- residual_kernel(rep(1, 50), "squared", 10, sample = 5) # Squared exponential.
 nothing <- residual_kernel(rep(1, 50), "o-u", 10, sample = 5) # Ornstein-Uhlenbeck.
-nothing <- residual_kernel(rep(1, 50), "matern", c(10, 10), sample = 5) # Matérn.
+nothing <- residual_kernel(rep(1, 50), "matern", c(5, 10), sample = 5) # Matérn.
 ```
 
 For the next section, let's make a covariance matrix using the Ornstein-Uhlenbeck-kernel with five time points, variance parameter 3 and range parameter 5.

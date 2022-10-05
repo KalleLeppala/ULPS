@@ -96,7 +96,7 @@ ggplot(pca, aes(x = PC1, y = PC2, fill = population)) +
 
 The underlying model of *ULPS* is
 
-*Y*<sub>*t*</sub> = *C*<sub>*t*</sub> + *Xβ*<sub>*t*</sub> + *ε*<sub>*t*</sub>,
+*Y*<sub>*t*</sub> = *C*<sub>*t*</sub> + *X**β*<sub>*t*</sub> + *ε*<sub>*t*</sub>,
 
 where *Y*<sub>*t*</sub> are the N phenotypes at time point *t*, *X* is
 the centered and scaled N x P genotype matrix, *β*<sub>*t*</sub> is the
@@ -104,7 +104,7 @@ vector of P genetic effects, *C*<sub>*t*</sub> are other observed
 effects at time point *t*, and *ε*<sub>*t*</sub> is the vector of
 residuals, each generated independently by a Gaussian process over time.
 The phenotypic variance causally explained by the term
-*Xβ*<sub>*t*</sub> is *β*<sup>⊤</sup>*Rβ*, where *R* is the linkage
+*X**β*<sub>*t*</sub> is *β*<sup>⊤</sup>*R**β*, where *R* is the linkage
 disequilibrium matrix between the variants. Note that *C*<sub>*t*</sub>
 and *X* need not be independent, in which case dividing the causally
 explained variance by the total phenotypic variance doesn’t equal
@@ -404,7 +404,11 @@ squared exponential model, “o-u” is the Ornstein–Uhlenbeck -model, and
 The function `residual_kernel()` returns the covariance matrix between
 time points when parameter `sample` is the default value “FALSE”. When
 `sample` a positive integer, `residual_kernel()` instead visualizes
-independent samples using the covariance matrix.
+independent samples using the covariance matrix. Option “noise” needs no
+parameters, other options need a range parameter determining how far
+points meaningfully affect one another (here 10), and option “matern”
+also needs a smoothness parameter determining how differentiable the
+curve is (here 5, differentiable 4 times).
 
 ``` r
 nothing <- residual_kernel(rep(1, 50), "noise", sample = 5) # Noise.
@@ -425,10 +429,10 @@ nothing <- residual_kernel(rep(1, 50), "o-u", 10, sample = 5) # Ornstein-Uhlenbe
 ![](README_files/figure-gfm/residual-3.png)<!-- -->
 
 ``` r
-nothing <- residual_kernel(rep(1, 50), "matern", c(10, 10), sample = 5) # Matérn.
+nothing <- residual_kernel(rep(1, 50), "matern", c(5, 10), sample = 5) # Matérn.
 ```
 
-    ## Warning in residual_kernel(rep(1, 50), "matern", c(10, 10), sample = 5): A
+    ## Warning in residual_kernel(rep(1, 50), "matern", c(5, 10), sample = 5): A
     ## residual autocorrelation matrix was not positive definite. Shrinking.
 
 ![](README_files/figure-gfm/residual-4.png)<!-- -->

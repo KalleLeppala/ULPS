@@ -11,14 +11,14 @@
 #' * "noise" White Gaussian noise. The matrix K is the T x T identity matrix. No `params` needed. The default option.
 #' * "squared" Squared exponential kernel, also known as radial basis function kernel or Gaussian kernel.
 #'             The (i, j)-element of K is defined as \out{exp(-0.5 d(i, j)<sup>2</sup> / l<sup>2</sup>)},
-#'             where d(i, j) is `points[j] - points[i]` and l is the range parameter `params[1]`, the only parameter needed for `type` "squared".
+#'             where d(i, j) is `points[j] - points[i]` and l is the range parameter `params[1]` determining haw far points meaningfully affect each other, the only parameter needed for `type` "squared".
 #' * "o-u" The Ornstein-Uhlenbeck -kernel, also known as the AR(1)-kernel.
 #'         The (i, j)-element of K is defined as \out{exp(-0.5 |d(i, j)| / l)},
-#'         where d(i, j) is `points[j] - points[i]` and l is the range parameter `params[1]`, the only parameter needed for `type` "o-u".
+#'         where d(i, j) is `points[j] - points[i]` and l is the range parameter `params[1]` determining haw far points meaningfully affect each other, the only parameter needed for `type` "o-u".
 #' * "matern" The Mat\out{&#233;}rn-kernel.
 #'            The (i, j)-element of K is defines as \out{	2<sup>1- &#957;</sup> (sqrt(2&#957;)|d(i, j)|/l) K<sub>&#957;</sub>((sqrt(2&#957;)|d(i, j)|/l))<sup>&#957;</sup>  / &#915;(&#957;)},
 #'            where \out{K<sub>&#957;</sub>()} is the modified Bessel function, \out{&#915;()} is the Gamma-function, d(i, j) is `points[j] - points[i]`,
-#'            \out{&#957;} is the smoothness parameter `params[1]` and the l is the range parameter `params[2]`.
+#'            \out{&#957;} is the smoothness parameter `params[1]` detemining how smooth the function is (differentiable ceil(\out{&#957;}) - 1 times) and the l is the range parameter `params[2]` determining haw far points meaningfully affect each other.
 #' @param params The parameters required, the amount and meaning of which depends on `type`.
 #' @param points An optional T-vector if the time points are not evenly spaced.
 #'               By default, distance between consecutive time points is one unit from the range parameters point of view.
